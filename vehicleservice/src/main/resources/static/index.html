@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vehicle Service System</title>
+
+    <style>
+
+        body{
+            margin:0;
+            font-family:Arial;
+            color:white;
+            text-align:center;
+
+            /* BACKGROUND IMAGE */
+            background: url("https://images.unsplash.com/photo-1503376780353-7e6692767b70") no-repeat center center/cover;
+        }
+
+        /* DARK OVERLAY */
+        .overlay{
+            background: rgba(0,0,0,0.6);
+            min-height:100vh;
+            padding-top:80px;
+        }
+
+        .container{
+            margin-top:50px;
+        }
+
+        h1{
+            font-size:40px;
+        }
+
+        p{
+            width:60%;
+            margin:auto;
+            line-height:1.6;
+        }
+
+        a{
+            color:yellow;
+            cursor:pointer;
+            font-size:18px;
+        }
+
+        .btn{
+            padding:12px 25px;
+            margin-top:20px;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:16px;
+        }
+
+        .register-btn{
+            background:orange;
+            color:white;
+        }
+
+        .login-btn{
+            background:blue;
+            color:white;
+            margin-left:10px;
+        }
+
+        #about{
+            display:none;
+            margin-top:50px;
+            padding:30px;
+            background:white;
+            color:black;
+            width:80%;
+            margin-left:auto;
+            margin-right:auto;
+            border-radius:10px;
+        }
+
+        ul{
+            text-align:left;
+            display:inline-block;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="overlay">
+
+    <div class="container">
+
+        <h1>🚗 Vehicle Service Management System</h1>
+
+        <p>
+            Book your vehicle service easily and track status online without visiting service centers.
+            Enjoy smooth booking, fast service updates, and admin-approved free services like water wash.
+        </p>
+
+        <br>
+
+        <a onclick="showAbout()">About the System</a>
+
+        <br><br>
+
+        <!-- BUTTONS -->
+        <button class="btn register-btn" onclick="goRegister()">Register</button>
+
+        <button class="btn login-btn" onclick="goLogin()">Login</button>
+
+    </div>
+
+    <!-- About Section -->
+    <div id="about">
+
+        <h2>🚗 About Our Vehicle Service System</h2>
+
+        <p>
+            Our Vehicle Service Management System is designed to simplify the process of booking
+            and managing vehicle services online. Users can access services anytime without visiting service centers.
+        </p>
+
+        <h3>👤 For Users</h3>
+        <p>
+            Users can register, login, and book services like brake service, oil change, and water wash.
+            They can also track booking status in real-time.
+        </p>
+
+        <h3>🛠️ Services</h3>
+        <ul>
+            <li>Oil Change</li>
+            <li>Brake Service</li>
+            <li>Engine Checkup</li>
+            <li>Water Wash (Free with Admin Approval)</li>
+        </ul>
+
+        <h3>⚡ Benefits</h3>
+        <ul>
+            <li>Easy Booking</li>
+            <li>Time Saving</li>
+            <li>User Friendly</li>
+            <li>Admin Managed Services</li>
+        </ul>
+
+    </div>
+
+</div>
+
+<script>
+
+    function goRegister(){
+        window.location.href="user.html";
+    }
+
+    function goLogin(){
+        window.location.href="login.html";
+    }
+
+    function showAbout(){
+        let about = document.getElementById("about");
+
+        if(about.style.display === "none"){
+            about.style.display = "block";
+        }else{
+            about.style.display = "none";
+        }
+    }
+
+</script>
+
+</body>
+</html>

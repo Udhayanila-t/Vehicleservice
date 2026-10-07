@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+
+    <style>
+        body{
+            font-family: Arial;
+            margin:0;
+            text-align:center;
+            background: url('bg.jpg') no-repeat center center/cover;
+        }
+
+        .overlay{
+            background: rgba(0,0,0,0.6);
+            min-height:100vh;
+            padding-bottom:30px;
+        }
+
+        header{
+            background: rgba(0,0,0,0.8);
+            color:white;
+            padding:15px;
+            font-size:22px;
+        }
+
+        .container{
+            margin-top:30px;
+        }
+
+        h2{
+            color:white;
+        }
+
+        button{
+            padding:10px 15px;
+            margin:10px;
+            background:green;
+            color:white;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:darkgreen;
+        }
+
+        table{
+            margin:30px auto;
+            border-collapse:collapse;
+            width:95%;
+            background:white;
+            box-shadow:0px 5px 10px rgba(0,0,0,0.4);
+        }
+
+        th,td{
+            padding:10px;
+            border:1px solid #ccc;
+        }
+
+        th{
+            background:#444;
+            color:white;
+        }
+
+        input{
+            padding:5px;
+        }
+
+        select{
+            padding:5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="overlay">
+
+    <header>
+        Vehicle Service Management - Admin Panel
+    </header>
+
+    <div class="container">
+
+        <h2>Admin Dashboard</h2>
+
+        <!-- ✅ ADD SERVICE BUTTON -->
+        <button onclick="openAddService()">➕ Add Service</button>
+
+        <!-- ✅ VIEW BOOKINGS -->
+        <button onclick="loadBookings()">📋 View Bookings</button>
+
+        <table>
+
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>User Name</th>
+                <th>Service</th>
+                <th>Date</th>
+                <th>Slot</th>
+                <th>Status</th>
+                <th>Expected Date</th>
+                <th>Expected Time</th>
+                <th>Update</th>
+            </tr>
+            </thead>
+
+            <tbody id="bookingTable"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+    // 🔥 OPEN ADD SERVICE PAGE
+    function openAddService(){
+        window.location.href="addService.html";
+    }
+
+    // 🔥 LOAD BOOKINGS
+    function loadBookings(){
+
+        fetch("http://localhost:8080/admin/bookings")
+        .then(res=>res.json())
+        .then(data=>{
+
+            let table=document.getElementById("bookingTable");
+            table.innerHTML="";
+
+            data.forEach(b=>{
+
+                table.innerHTML+=`
+                <tr>
+                <td>${b.bookingId}</td>
+                <td>${b.userName}</td>
+                <td>${b.serviceName}</td>
+                <td>${b.bookingDate}</td>
+                <td>${b.timeSlot}</td>
+                <td>${b.status}</td>
+
+                <td>
+                    <input type="date" id="date${b.bookingId}">
+                </td>
+
+                <td>
+                    <input type="time" id="time${b.bookingId}">
+                </td>
+
+                <td>
+                    <select onchange="updateBooking(${b.bookingId}, this.value)">
+                        <option value="">Change</option>
+                        <option value="In Process">In Process</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </td>
+
+                </tr>
+                `;
+            });
+
+        });
+
+    }
+
+    // 🔥 UPDATE STATUS + DELIVERY TIME
+    function updateBooking(id, status){
+
+        if(status === "") return;
+
+        let date = document.getElementById("date"+id).value;
+        let time = document.getElementById("time"+id).value;
+
+        if(date === "" || time === ""){
+            alert("Please select date & time ❗");
+            return;
+        }
+
+        fetch(`http://localhost:8080/admin/updateBooking/${id}?status=${status}&expectedDate=${date}&expectedTime=${time}`,{
+            method:"PUT"
+        })
+        .then(res=>res.json())
+        .then(data=>{
+            alert("Updated Successfully ✅");
+            loadBookings();
+        });
+
+    }
+
+</script>
+
+</body>
+</html>

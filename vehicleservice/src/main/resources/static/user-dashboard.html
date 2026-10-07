@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Dashboard</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            margin:0;
+            text-align:center;
+
+            /* ✅ SAME IMAGE BACKGROUND */
+            background: url('car-bg.jpg') no-repeat center center/cover;
+            min-height: 100vh;
+        }
+
+        /* 🔥 Overlay for readability */
+        .overlay{
+            background: rgba(0,0,0,0.5);
+            min-height: 100vh;
+            padding-top:40px;
+        }
+
+        h1{
+            color:white;
+        }
+
+        .desc{
+            color:#ddd;
+            width:60%;
+            margin:auto;
+            line-height:1.5;
+        }
+
+        /* 🔥 STATS BOX */
+
+        .stats{
+            display:flex;
+            justify-content:center;
+            gap:40px;
+            margin-top:40px;
+        }
+
+        .stat-box{
+            width:200px;
+            height:110px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius:15px;
+            box-shadow:0px 5px 15px rgba(0,0,0,0.3);
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            color:white;
+        }
+
+        .stat-box p{
+            color:#ddd;
+        }
+
+        /* 🔥 BIG CARDS */
+
+        .cards{
+            margin-top:70px;
+            display:flex;
+            justify-content:center;
+            gap:80px;
+        }
+
+        .card{
+            width:320px;
+            height:200px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius:20px;
+            box-shadow:0px 8px 20px rgba(0,0,0,0.4);
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            cursor:pointer;
+            transition:0.3s;
+            color:white;
+        }
+
+        .card:hover{
+            transform:scale(1.07);
+        }
+
+        .bookings{
+            border-left:8px solid blue;
+        }
+
+        .new{
+            border-left:8px solid green;
+        }
+
+        /* 🔥 LOGOUT */
+
+        .logout{
+            margin-top:30px;
+        }
+
+        .logout button{
+            padding:10px 20px;
+            background:red;
+            color:white;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="overlay"> <!-- ✅ overlay added -->
+
+    <h1 id="welcome">Welcome 👋</h1>
+
+    <p class="desc">
+        Manage your vehicle service bookings easily.
+        Track your service progress and book new services anytime.
+    </p>
+
+    <!-- 🔥 STATS -->
+
+    <div class="stats">
+
+        <div class="stat-box">
+            <h2 id="total">0</h2>
+            <p>Total Bookings</p>
+        </div>
+
+        <div class="stat-box">
+            <h2 id="pending">0</h2>
+            <p>Pending</p>
+        </div>
+
+        <div class="stat-box">
+            <h2 id="completed">0</h2>
+            <p>Completed</p>
+        </div>
+
+    </div>
+
+    <!-- 🔥 BIG ACTION BOXES -->
+
+    <div class="cards">
+
+        <div class="card bookings" onclick="goBookings()">
+            <h2>📄 My Bookings</h2>
+            <p>Check your service status</p>
+        </div>
+
+        <div class="card new" onclick="goNew()">
+            <h2>➕ New Booking</h2>
+            <p>Book a new service</p>
+        </div>
+
+    </div>
+
+    <!-- 🔥 LOGOUT BUTTON -->
+
+    <div class="logout">
+        <button onclick="logout()">Logout</button>
+    </div>
+
+</div>
+
+<script>
+
+    window.onload = function(){
+
+        let userName = localStorage.getItem("userName");
+
+        if(!userName){
+            alert("Please login first ❗");
+            window.location.href = "login.html";
+            return;
+        }
+
+        document.getElementById("welcome").innerText =
+            "Welcome " + userName + " 👋";
+
+        fetch("http://localhost:8080/booking")
+        .then(res=>res.json())
+        .then(data=>{
+
+            let total = 0;
+            let pending = 0;
+            let completed = 0;
+
+            data.forEach(b=>{
+
+                if(b.userName === userName){
+
+                    total++;
+
+                    if(!b.status || b.status === "Pending" || b.status === "Booked"){
+                        pending++;
+                    }
+
+                    if(b.status === "Completed"){
+                        completed++;
+                    }
+
+                }
+
+            });
+
+            document.getElementById("total").innerText = total;
+            document.getElementById("pending").innerText = pending;
+            document.getElementById("completed").innerText = completed;
+
+        })
+        .catch(err=>{
+            console.log(err);
+            alert("Error loading data ❗");
+        });
+
+    }
+
+    function goBookings(){
+        window.location.href = "myBookings.html";
+    }
+
+    function goNew(){
+        window.location.href = "service.html";
+    }
+
+    function logout(){
+        localStorage.clear();
+        window.location.href = "login.html";
+    }
+
+</script>
+
+</body>
+</html>

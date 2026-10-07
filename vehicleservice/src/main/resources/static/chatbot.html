@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vehicle Service Chatbot</title>
+
+    <style>
+
+        body{
+        font-family: Arial;
+        }
+
+        /* Chat icon */
+
+        #chatIcon{
+        position:fixed;
+        bottom:20px;
+        right:20px;
+        background:green;
+        color:white;
+        width:60px;
+        height:60px;
+        border-radius:50%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        cursor:pointer;
+        font-size:24px;
+        }
+
+        /* Chat container */
+
+        #chatContainer{
+        position:fixed;
+        bottom:90px;
+        right:20px;
+        width:320px;
+        background:white;
+        border:1px solid #ccc;
+        display:none;
+        }
+
+        /* Header */
+
+        #chatHeader{
+        background:green;
+        color:white;
+        padding:10px;
+        }
+
+        /* Chat messages */
+
+        #chatBox{
+        height:260px;
+        overflow-y:auto;
+        padding:10px;
+        }
+
+        /* Input */
+
+        #userInput{
+        width:70%;
+        padding:6px;
+        }
+
+        button{
+        padding:6px;
+        background:green;
+        color:white;
+        border:none;
+        cursor:pointer;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<h2>Vehicle Service Center</h2>
+
+<!-- Chat Icon -->
+
+<div id="chatIcon" onclick="toggleChat()">💬</div>
+
+<!-- Chat Window -->
+
+<div id="chatContainer">
+
+    <div id="chatHeader">Service Chatbot</div>
+
+    <div id="chatBox"></div>
+
+    <input type="text" id="userInput" placeholder="Ask something">
+    <button onclick="sendMessage()">Send</button>
+
+</div>
+
+<script>
+
+    /* open / close chatbot */
+
+    function toggleChat(){
+
+    let chat=document.getElementById("chatContainer");
+
+    if(chat.style.display==="none"){
+    chat.style.display="block";
+    }else{
+    chat.style.display="none";
+    }
+
+    }
+
+    /* chatbot logic */
+
+    function sendMessage(){
+
+    let input=document.getElementById("userInput").value.toLowerCase();
+    let chat=document.getElementById("chatBox");
+
+    chat.innerHTML += "<p><b>You:</b> "+input+"</p>";
+
+    /* Booking status check */
+
+    if(input.startsWith("status")){
+
+    let id=input.split(" ")[1];
+
+    fetch("/booking/"+id)
+    .then(res=>{
+
+    if(!res.ok){
+
+    chat.innerHTML += "<p><b>Bot:</b> Booking not found.</p>";
+    return;
+
+    }
+
+    return res.json();
+
+    })
+    .then(data=>{
+
+    if(data){
+    chat.innerHTML += "<p><b>Bot:</b> Booking Status : "+data.status+"</p>";
+    }
+
+    });
+
+    }
+
+    /* Available slots */
+
+    else if(input.includes("slot")){
+
+    chat.innerHTML += "<p><b>Bot:</b> Available slots: 10 AM, 12 PM, 2 PM, 4 PM. Each slot allows only 2 bookings.</p>";
+
+    }
+
+    /* Service information */
+
+    else if(input.includes("oil")){
+
+    chat.innerHTML += "<p><b>Bot:</b> Oil Change price ₹500</p>";
+
+    }
+
+    else if(input.includes("wash")){
+
+    chat.innerHTML += "<p><b>Bot:</b> Water Wash price ₹300</p>";
+
+    }
+
+    else if(input.includes("service")){
+
+    chat.innerHTML += "<p><b>Bot:</b> General Service price ₹1000</p>";
+
+    }
+
+    else if(input.includes("booking")){
+
+    chat.innerHTML += "<p><b>Bot:</b> Please go to the booking page to book your service.</p>";
+
+    }
+
+    else{
+
+    chat.innerHTML += "<p><b>Bot:</b> You can ask about service price, booking status, or available slots.</p>";
+
+    }
+
+    document.getElementById("userInput").value="";
+
+    }
+
+</script>
+
+</body>
+</html>

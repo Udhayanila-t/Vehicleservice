@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Service</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            margin:0;
+            text-align:center;
+
+            /* 🔥 BACKGROUND IMAGE */
+            background: url('bg.jpg') no-repeat center center/cover;
+        }
+
+        /* 🔥 overlay */
+        .overlay{
+            background: rgba(0,0,0,0.6);
+            min-height:100vh;
+            padding-top:40px;
+        }
+
+        .container{
+            background:white;
+            width:350px;
+            margin:80px auto;
+            padding:30px;
+            border-radius:10px;
+            box-shadow:0px 5px 15px rgba(0,0,0,0.4);
+        }
+
+        h2{
+            margin-bottom:20px;
+        }
+
+        input, textarea{
+            width:90%;
+            padding:10px;
+            margin:10px;
+            border-radius:5px;
+            border:1px solid #ccc;
+        }
+
+        button{
+            padding:10px 20px;
+            background:green;
+            color:white;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:darkgreen;
+        }
+
+        .back{
+            margin-top:15px;
+            display:block;
+            color:blue;
+            cursor:pointer;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="overlay">
+
+    <div class="container">
+
+        <h2>➕ Add New Service</h2>
+
+        <input type="text" id="serviceName" placeholder="Service Name"><br>
+
+        <input type="number" id="price" placeholder="Price"><br>
+
+        <textarea id="description" placeholder="Description"></textarea><br>
+
+        <button onclick="addService()">Add Service</button>
+
+        <span class="back" onclick="goBack()">⬅ Back to Admin</span>
+
+    </div>
+
+</div>
+
+<script>
+    function addService(){
+
+        let serviceName = document.getElementById("serviceName").value.trim();
+        let price = document.getElementById("price").value.trim();
+        let description = document.getElementById("description").value.trim();
+
+        if(serviceName === "" || price === "" || description === ""){
+            alert("Please fill all fields ❌");
+            return;
+        }
+
+        let service = {
+            serviceName: serviceName,
+            price: parseFloat(price),
+            description: description
+        };
+
+        fetch("http://localhost:8080/services", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(service)
+        })
+        .then(response => {
+            if(!response.ok){
+                throw new Error("Server error");
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert("Service Added Successfully ✅");
+
+            document.getElementById("serviceName").value = "";
+            document.getElementById("price").value = "";
+            document.getElementById("description").value = "";
+        })
+        .catch(error => {
+            alert("Error adding service ❌");
+            console.error(error);
+        });
+
+    }
+
+    function goBack(){
+        window.location.href = "admin.html";
+    }
+</script>
+
+</body>
+</html>

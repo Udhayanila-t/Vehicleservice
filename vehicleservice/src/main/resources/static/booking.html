@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Service</title>
+
+    <style>
+        body{
+            font-family: Arial;
+
+            /* ✅ SAME BG IMAGE */
+            background: url('car-bg.jpg') no-repeat center center/cover;
+
+            min-height: 100vh;
+            margin: 0;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 🔥 Glass Container */
+        .container{
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding:30px;
+            width:350px;
+            border-radius:15px;
+            box-shadow:0px 8px 20px rgba(0,0,0,0.4);
+            text-align:center;
+            color:white;
+        }
+
+        h2{
+            margin-bottom:15px;
+        }
+
+        input,select,textarea{
+            margin:10px 0;
+            padding:10px;
+            width:90%;
+            border:none;
+            border-radius:5px;
+            outline:none;
+        }
+
+        input:focus, select:focus, textarea:focus{
+            box-shadow:0 0 5px #00f2fe;
+        }
+
+        button{
+            padding:10px;
+            width:95%;
+            background:#00c853;
+            color:white;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+            margin-top:10px;
+        }
+
+        button:hover{
+            background:#009624;
+        }
+
+        .cost{
+            background: rgba(255,255,255,0.2);
+            padding:10px;
+            border-radius:8px;
+            margin:10px 0;
+        }
+
+        #freeMsg{
+            color:#00ffcc;
+            font-weight:bold;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>🚗 Book Service</h2>
+
+    <input type="text" id="userName" readonly>
+
+    <input type="text" id="vehicleNumber" placeholder="Vehicle Number">
+
+    <textarea id="serviceName" readonly></textarea>
+
+    <div class="cost">
+        <h3>Total Cost: ₹ <span id="total">0</span></h3>
+        <p id="freeMsg"></p>
+    </div>
+
+    <input type="date" id="bookingDate">
+
+    <select id="timeSlot">
+        <option value="">Select Slot</option>
+        <option>10AM</option>
+        <option>12PM</option>
+        <option>2PM</option>
+        <option>4PM</option>
+    </select>
+
+    <button onclick="bookService()">Book Service</button>
+
+</div>
+
+<script>
+
+    let selectedServices = [];
+    let serviceList = [];
+
+    window.onload = function(){
+
+        let userName = localStorage.getItem("userName");
+        document.getElementById("userName").value = userName;
+
+        selectedServices = JSON.parse(localStorage.getItem("services"));
+
+        if(selectedServices){
+
+            document.getElementById("serviceName").value = selectedServices.join(", ");
+
+            fetch("http://localhost:8080/services")
+            .then(res=>res.json())
+            .then(data=>{
+
+                serviceList = data;
+
+                let total = 0;
+                let freeList = [];
+
+                selectedServices.forEach(name=>{
+
+                    let s = data.find(x=>x.serviceName===name);
+
+                    if(s){
+
+                        if(name === "Water Wash" || name === "Inspection"){
+                            freeList.push(name);
+                        }else{
+                            total += s.price;
+                        }
+
+                    }
+
+                });
+
+                document.getElementById("total").innerText = total;
+
+                if(freeList.length > 0){
+                    document.getElementById("freeMsg").innerText =
+                    "🎉 FREE Applied: " + freeList.join(", ");
+                }
+
+            });
+
+        }
+
+    };
+
+    function bookService(){
+
+        let name=document.getElementById("userName").value;
+        let vehicle=document.getElementById("vehicleNumber").value;
+        let service=selectedServices.join(",");
+        let date=document.getElementById("bookingDate").value;
+        let slot=document.getElementById("timeSlot").value;
+
+        if(name===""||vehicle===""||service===""||date===""||slot===""){
+            alert("Fill all fields ❗");
+            return;
+        }
+
+        fetch("http://localhost:8080/booking/add",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                userName:name,
+                vehicleNumber:vehicle,
+                serviceName:service,
+                bookingDate:date,
+                timeSlot:slot
+            })
+        })
+        .then(res=>res.text())
+        .then(data=>{
+            alert(data);
+            window.location.href="status.html";
+        });
+
+    }
+
+</script>
+
+</body>
+</html>

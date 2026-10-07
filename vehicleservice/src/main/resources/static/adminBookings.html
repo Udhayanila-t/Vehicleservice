@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Bookings</title>
+
+    <style>
+
+        body{
+        font-family:Arial;
+        text-align:center;
+        }
+
+        table{
+        width:90%;
+        margin:auto;
+        border-collapse:collapse;
+        }
+
+        th,td{
+        border:1px solid #ccc;
+        padding:10px;
+        }
+
+        th{
+        background:#333;
+        color:white;
+        }
+
+        button{
+        background:green;
+        color:white;
+        border:none;
+        padding:6px 12px;
+        cursor:pointer;
+        }
+
+    </style>
+
+</head>
+
+<body onload="loadBookings()">
+
+<h2>All Bookings</h2>
+
+<table>
+
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>User</th>
+        <th>Vehicle</th>
+        <th>Service</th>
+        <th>Date</th>
+        <th>Time Slot</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+
+    <tbody id="bookingTable"></tbody>
+
+</table>
+
+<script>
+
+    function loadBookings(){
+
+    fetch("http://localhost:8080/booking")
+    .then(res=>res.json())
+    .then(data=>{
+
+    let table=document.getElementById("bookingTable");
+    table.innerHTML="";
+
+    data.forEach(b=>{
+
+    let action="";
+
+    if(b.status==="Booked"){
+    action=`<button onclick="completeBooking(${b.bookingId})">Complete</button>`;
+    }else{
+    action="Completed";
+    }
+
+    table.innerHTML+=`
+    <tr>
+    <td>${b.bookingId}</td>
+    <td>${b.userName}</td>
+    <td>${b.vehicleNumber}</td>
+    <td>${b.serviceName}</td>
+    <td>${b.bookingDate}</td>
+    <td>${b.timeSlot}</td>
+    <td>${b.status}</td>
+    <td>${action}</td>
+    </tr>
+    `;
+
+    });
+
+    });
+
+    }
+
+    function completeBooking(id){
+
+    fetch("http://localhost:8080/admin/updateStatus/"+id,{
+    method:"PUT"
+    })
+    .then(res=>res.json())
+    .then(data=>{
+
+    alert("Booking Completed");
+    loadBookings();
+
+    });
+
+    }
+
+</script>
+
+</body>
+</html>

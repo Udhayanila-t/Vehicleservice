@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Booking Status</title>
+
+    <style>
+        body{
+            font-family: Arial;
+            text-align:center;
+
+            /* 🔥 BACKGROUND IMAGE */
+            background: url('car-bg.jpg') no-repeat center center/cover;
+            min-height:100vh;
+            margin:0;
+
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+
+        /* 🔥 Glass container */
+        .container{
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding:30px;
+            border-radius:15px;
+            width:90%;
+            color:white;
+        }
+
+        h2{
+            margin-top:10px;
+        }
+
+        button{
+            padding:10px 15px;
+            background:green;
+            color:white;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+            margin:10px;
+        }
+
+        button:hover{
+            background:darkgreen;
+        }
+
+        table{
+            margin:30px auto;
+            border-collapse:collapse;
+            width:100%;
+            background:white;
+            color:black;
+        }
+
+        th,td{
+            padding:10px;
+            border:1px solid #ccc;
+        }
+
+        th{
+            background:black;
+            color:white;
+        }
+
+        /* 🔥 status colors */
+        .Booked{ color:orange; font-weight:bold; }
+        .Completed{ color:green; font-weight:bold; }
+        .Cancelled{ color:red; font-weight:bold; }
+        .InProcess{ color:blue; font-weight:bold; }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>📄 My Booking Status</h2>
+
+    <!-- 🔙 Back Button -->
+    <button onclick="goBack()">← Back</button>
+
+    <table>
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Service</th>
+            <th>Date</th>
+            <th>Slot</th>
+            <th>Status</th>
+            <th>Expected Date</th>
+            <th>Expected Time</th>
+        </tr>
+        </thead>
+
+        <tbody id="tableBody"></tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+    function goBack(){
+        window.location.href = "myBookings.html";
+    }
+
+    window.onload = function(){
+
+        let userName = localStorage.getItem("userName");
+
+        if(!userName){
+            alert("Please login first ❗");
+            window.location.href = "login.html";
+            return;
+        }
+
+        fetch("http://localhost:8080/booking")
+        .then(res=>res.json())
+        .then(data=>{
+
+            let table = document.getElementById("tableBody");
+            table.innerHTML = "";
+
+            data.forEach(b=>{
+
+                if(b.userName === userName){
+
+                    // 🔥 dynamic status class
+                    let statusClass = b.status.replace(" ", "");
+
+                    table.innerHTML += `
+                    <tr>
+                        <td>${b.bookingId}</td>
+                        <td>${b.serviceName}</td>
+                        <td>${b.bookingDate}</td>
+                        <td>${b.timeSlot}</td>
+                        <td class="${statusClass}">${b.status || "Pending"}</td>
+                        <td>${b.expectedDate || "-"}</td>
+                        <td>${b.expectedTime || "-"}</td>
+                    </tr>
+                    `;
+                }
+
+            });
+
+        })
+        .catch(err=>{
+            console.log(err);
+            alert("Error loading bookings ❗");
+        });
+
+    }
+
+</script>
+
+</body>
+</html>

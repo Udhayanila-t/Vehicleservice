@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Login</title>
+
+    <style>
+        body{
+            font-family: Arial;
+            background: url('car-bg.jpg') no-repeat center center/cover;
+
+            height: 100vh;
+            margin: 0;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box{
+            background: rgba(255,255,255,0.2); /* glass effect */
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+            color: white;
+        }
+
+        h2{
+            margin-bottom: 20px;
+        }
+
+        input{
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input:focus{
+            box-shadow: 0 0 5px #00f2fe;
+        }
+
+        button{
+            padding: 10px 20px;
+            background: #00c853;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        button:hover{
+            background: #009624;
+        }
+
+        a{
+            color: #fff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>User Login</h2>
+
+    <input type="email" id="email" placeholder="Email" required><br>
+
+    <input type="password" id="password" placeholder="Password" required><br>
+
+    <button onclick="login()">Login</button>
+
+    <p>Don't have account? <a href="register.html">Register here</a></p>
+
+</div>
+
+<script>
+
+    function login(){
+
+        let user = {
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+        };
+
+        fetch("http://localhost:8080/users/login",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify(user)
+        })
+        .then(res => res.text())
+        .then(data => {
+
+            console.log("Response:", data);
+
+            if(data !== "INVALID"){
+
+                let userData = JSON.parse(data);
+
+                alert("Login Successful ✅");
+
+                localStorage.setItem("userName", userData.name);
+                localStorage.setItem("userEmail", userData.email);
+
+                window.location.href="user-dashboard.html";
+
+            }else{
+                alert("Invalid Credentials ❌");
+            }
+
+        })
+        .catch(err=>{
+            console.log(err);
+            alert("Server error ❗");
+        });
+
+    }
+
+</script>
+
+</body>
+</html>

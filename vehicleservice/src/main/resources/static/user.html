@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Registration</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin:0;
+            text-align: center;
+
+            /* 🔥 BACKGROUND IMAGE */
+            background: url('car-bg.jpg') no-repeat center center/cover;
+        }
+
+        /* 🔥 Dark overlay */
+        .overlay{
+            background: rgba(0,0,0,0.6);
+            min-height:100vh;
+            padding-top:80px;
+        }
+
+        .box {
+            background: white;
+            padding: 30px;
+            width: 300px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow:0px 5px 15px rgba(0,0,0,0.4);
+        }
+
+        h2{
+            margin-bottom:20px;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px;
+            border-radius:5px;
+            border:1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius:5px;
+        }
+
+        button:hover{
+            background:darkblue;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="overlay">
+
+    <div class="box">
+        <h2>User Registration</h2>
+
+        <form onsubmit="event.preventDefault(); registerUser();">
+
+            <input type="text" id="name" placeholder="Name" required><br>
+
+            <input type="email" id="email" placeholder="Email" required><br>
+
+            <input type="password" id="password" placeholder="Password" required><br>
+
+            <input type="text" id="phone" placeholder="Phone" required><br>
+
+            <button type="submit">Register</button>
+
+        </form>
+    </div>
+
+</div>
+
+<script>
+    function registerUser(){
+
+        let user = {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+            phone: document.getElementById("phone").value
+        };
+
+        fetch("http://localhost:8080/users/register",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify(user)
+        })
+        .then(response => {
+            if(!response.ok){
+                throw new Error("Server error");
+            }
+            return response.text();
+        })
+        .then(data => {
+            alert("Registration Successful ✅");
+
+            setTimeout(() => {
+                window.location.href = "user-dashboard.html";
+            }, 1000);
+        })
+        .catch(error => {
+            alert("Registration Failed ❌");
+            console.error(error);
+        });
+
+    }
+</script>
+
+</body>
+</html>

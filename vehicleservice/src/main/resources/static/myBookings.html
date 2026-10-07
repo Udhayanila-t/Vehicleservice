@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Bookings</title>
+
+    <style>
+        body{
+            font-family: Arial;
+            background: url('car-bg.jpg') no-repeat center center/cover;
+            min-height: 100vh;
+            margin:0;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .container{
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding:30px;
+            border-radius:15px;
+            width:80%;
+            color:white;
+        }
+
+        table{
+            margin:auto;
+            margin-top:20px;
+            border-collapse:collapse;
+            width:100%;
+        }
+
+        th,td{
+            border:1px solid rgba(255,255,255,0.3);
+            padding:10px;
+        }
+
+        th{
+            background: rgba(0,0,0,0.3);
+        }
+
+        button{
+            padding:5px 10px;
+            border:none;
+            border-radius:5px;
+            cursor:pointer;
+        }
+
+        .view{
+            background:blue;
+            color:white;
+        }
+
+        .cancel{
+            background:red;
+            color:white;
+        }
+
+        .back{
+            background:green;
+            color:white;
+            margin-bottom:15px;
+        }
+
+        /* 🔥 status colors */
+        .booked{ color: yellow; }
+        .completed{ color: lightgreen; }
+        .cancelled{ color: red; }
+        .process{ color: orange; }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- 🔙 Back Button -->
+    <button class="back" onclick="goBack()">← Back</button>
+
+    <h2>My Bookings</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Service</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody id="table"></tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+    let user = localStorage.getItem("userName");
+
+    // 🔙 Back function
+    function goBack(){
+        window.location.href="user-dashboard.html";
+    }
+
+    // 🔥 Load bookings
+    function loadBookings(){
+
+        fetch("http://localhost:8080/booking")
+        .then(res=>res.json())
+        .then(data=>{
+
+            let table=document.getElementById("table");
+            table.innerHTML = "";
+
+            data.forEach(b=>{
+
+                if(b.userName === user){
+
+                    // 🎨 status color class
+                    let statusClass = "";
+
+                    if(b.status === "Booked") statusClass = "booked";
+                    else if(b.status === "Completed") statusClass = "completed";
+                    else if(b.status === "Cancelled") statusClass = "cancelled";
+                    else if(b.status === "In Process") statusClass = "process";
+
+                    table.innerHTML += `
+                    <tr>
+                    <td>${b.bookingId}</td>
+                    <td>${b.serviceName}</td>
+                    <td>${b.bookingDate}</td>
+
+                    <td class="${statusClass}">${b.status}</td>
+
+                    <td>
+                        <button class="view" onclick="viewStatus(${b.bookingId})">View</button>
+
+                        ${
+                            b.status === "Completed" || b.status === "Cancelled"
+                            ? "—"
+                            : `<button class="cancel" onclick="confirmCancel(${b.bookingId})">Cancel</button>`
+                        }
+                    </td>
+
+                    </tr>
+                    `;
+                }
+
+            });
+
+        });
+
+    }
+
+    // 🔍 View status page
+    function viewStatus(id){
+        localStorage.setItem("bookingId", id);
+        window.location.href="status.html";
+    }
+
+    // ❓ Confirm cancel
+    function confirmCancel(id){
+
+        if(confirm("Are you sure to cancel booking?")){
+            cancelBooking(id);
+        }
+
+    }
+
+    // ❌ Cancel booking
+    function cancelBooking(id){
+
+        fetch(`http://localhost:8080/booking/cancel/${id}`,{
+            method:"PUT"
+        })
+        .then(res=>res.json())
+        .then(data=>{
+            alert("Booking Cancelled ❌");
+            loadBookings();
+        })
+        .catch(err=>{
+            console.log(err);
+            alert("Error ❗");
+        });
+
+    }
+
+    // 🔄 Auto load
+    loadBookings();
+
+</script>
+
+</body>
+</html>

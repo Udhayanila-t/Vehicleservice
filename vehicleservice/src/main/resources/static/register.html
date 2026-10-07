@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Register</title>
+
+    <style>
+        body{
+            font-family: Arial;
+            background: url('car-bg.jpg') no-repeat center center/cover;
+
+            height: 100vh;
+            margin: 0;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box{
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            width: 320px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+            color: white;
+        }
+
+        h2{
+            margin-bottom: 20px;
+        }
+
+        input{
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input:focus{
+            box-shadow: 0 0 5px #00f2fe;
+        }
+
+        button{
+            padding: 10px 20px;
+            background: #00c853;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        button:hover{
+            background: #009624;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>User Register</h2>
+
+    <input type="text" id="name" placeholder="Name"><br>
+    <input type="email" id="email" placeholder="Email"><br>
+    <input type="tel" id="phone" placeholder="Phone Number"><br> <!-- ✅ NEW -->
+    <input type="password" id="password" placeholder="Password"><br>
+
+    <button onclick="register()">Register</button>
+
+</div>
+
+<script>
+
+    function register(){
+
+        let user = {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            phone: document.getElementById("phone").value, // ✅ NEW
+            password: document.getElementById("password").value
+        };
+
+        fetch("http://localhost:8080/users/register",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify(user)
+        })
+        .then(res => res.text())
+        .then(data => {
+
+            alert(data);
+
+            if(data.includes("Successful")){
+
+                localStorage.setItem("userName", user.name);
+
+                console.log("Redirecting to dashboard...");
+
+                setTimeout(()=>{
+                    window.location.href = "user-dashboard.html";
+                },1000);
+            }
+
+        })
+        .catch(err=>{
+            console.log(err);
+            alert("Server error ❗");
+        });
+
+    }
+
+</script>
+
+</body>
+</html>
